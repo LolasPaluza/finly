@@ -9,10 +9,13 @@ app = FastAPI(title="Finly API")
 
 import os
 
-ALLOWED_ORIGINS = os.getenv(
-    "ALLOWED_ORIGINS",
-    "http://localhost:3000,http://localhost:3001"
-).split(",")
+_base_origins = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://finly-rouge-two.vercel.app",
+]
+_extra = os.getenv("ALLOWED_ORIGINS", "")
+ALLOWED_ORIGINS = _base_origins + [o.strip() for o in _extra.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,

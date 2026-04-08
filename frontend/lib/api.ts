@@ -45,6 +45,8 @@ export const api = {
       request<import("./types").Transaction>(`/transactions/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
     delete: (id: number) =>
       request(`/transactions/${id}`, { method: "DELETE" }),
+    deleteMonth: (month: string) =>
+      request(`/transactions/month/${month}`, { method: "DELETE" }),
     upload: async (file: File, docType: "extrato" | "fatura" | "pix_only" = "extrato") => {
       const form = new FormData();
       form.append("file", file);

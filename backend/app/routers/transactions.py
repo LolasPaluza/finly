@@ -103,6 +103,19 @@ def update_transaction(
     db.refresh(tx)
     return tx
 
+@router.delete("/month/{month}")
+def delete_month(
+    month: str,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    deleted = db.query(models.Transaction).filter(
+        models.Transaction.user_id == current_user.id,
+        models.Transaction.month == month
+    ).delete()
+    db.commit()
+    return {"deleted": deleted}
+
 @router.delete("/{tx_id}")
 def delete_transaction(
     tx_id: int,

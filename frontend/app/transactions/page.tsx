@@ -23,6 +23,7 @@ export default function TransactionsPage() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
+  const [confirmDeleteMonth, setConfirmDeleteMonth] = useState(false);
 
   useEffect(() => {
     api.transactions.months().then((ms) => {
@@ -46,6 +47,13 @@ export default function TransactionsPage() {
     setConfirmDelete(null);
   }
 
+  async function handleDeleteMonth() {
+    await api.transactions.deleteMonth(month).catch(console.error);
+    setTxs([]);
+    setConfirmDeleteMonth(false);
+    api.transactions.months().then(setMonths).catch(console.error);
+  }
+
   function handleSaved(updated: Transaction) {
     setTxs((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
   }
@@ -56,7 +64,8 @@ export default function TransactionsPage() {
   return (
     <div className="p-4 md:p-5">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-4 flex-wrap">
+      <div className="flex items-center gap-2 mb-4 flex-wrap justify-between">
+        <div className="flex items-center gap-2 flex-wrap">
         <span className="text-xs text-text-muted">Transações —</span>
         {months.length > 1 ? (
           <div className="flex gap-1 flex-wrap">
@@ -76,6 +85,15 @@ export default function TransactionsPage() {
           </div>
         ) : (
           <span className="text-xs text-text-primary font-semibold">{fmtMonth(month)}</span>
+        )}
+        </div>
+        {txs.length > 0 && (
+          <button
+            onClick={() => setConfirmDeleteMonth(true)}
+            className="text-xs text-text-muted hover:text-danger transition"
+          >
+            Excluir mês
+          </button>
         )}
       </div>
 
@@ -137,6 +155,32 @@ export default function TransactionsPage() {
           onClose={() => setEditing(null)}
           onSaved={handleSaved}
         />
+      )}
+
+      {/* Delete month confirmation */}
+      {confirmDeleteMonth && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-bg-card border border-border rounded-2xl p-6 w-full max-w-xs mx-4 flex flex-col gap-4">
+            <h2 className="text-base font-bold text-text-primary">Excluir {fmtMonth(month)}?</h2>
+            <p className="text-sm text-text-muted">
+              Todas as {txs.length} transações deste mês serão apagadas. Não dá para desfazer.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmDeleteMonth(false)}
+                className="text-sm text-text-muted px-4 py-2 rounded-lg hover:text-text-secondary transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDeleteMonth}
+                className="bg-danger text-white text-sm font-bold px-4 py-2 rounded-lg"
+              >
+                Excluir tudo
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Delete confirmation */}

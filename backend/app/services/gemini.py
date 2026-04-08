@@ -15,11 +15,28 @@ def call_gemini(prompt: str, file_content: bytes = None, mime_type: str = None) 
     response = model.generate_content(parts)
     return response.text
 
-def parse_extrato(file_content: bytes, mime_type: str) -> str:
-    prompt = """Analise este extrato bancário e extraia TODAS as transações.
+def parse_extrato(file_content: bytes, mime_type: str, doc_type: str = "extrato") -> str:
+    if doc_type == "fatura":
+        prompt = """Analise esta fatura de cartão de crédito e extraia TODAS as compras/lançamentos individuais.
+Retorne APENAS um JSON válido no formato:
+[{"date": "YYYY-MM-DD", "description": "nome do estabelecimento ou descrição", "amount": -45.00}]
+REGRAS OBRIGATÓRIAS:
+- Todos os valores devem ser NEGATIVOS (são gastos com cartão)
+- NÃO inclua: pagamento da fatura, pagamento mínimo, encargos, juros, multas, saldo anterior, total da fatura
+- Inclua APENAS as compras e serviços cobrados
+- Se a data não aparecer, use o primeiro dia do mês da fatura
+- Se a descrição for muito longa, resuma em até 40 caracteres
+Não inclua nenhum texto além do JSON."""
+    else:
+        prompt = """Analise este extrato bancário e extraia TODAS as transações individuais.
 Retorne APENAS um JSON válido no formato:
 [{"date": "YYYY-MM-DD", "description": "descrição", "amount": -45.00}]
-Valores negativos = despesas, positivos = receitas/entradas.
+REGRAS OBRIGATÓRIAS:
+- Valores NEGATIVOS = saídas, débitos, compras, pagamentos
+- Valores POSITIVOS = entradas, créditos, transferências recebidas, salário, Pix recebido
+- NÃO inclua: saldo, totais, linhas de resumo ou cabeçalhos
+- Inclua APENAS transações individuais
+- Se a descrição for muito longa, resuma em até 40 caracteres
 Não inclua nenhum texto além do JSON."""
     return call_gemini(prompt, file_content, mime_type)
 

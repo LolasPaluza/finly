@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Query, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, Query, HTTPException, Form
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.auth import get_current_user
@@ -16,6 +16,7 @@ MIME_TYPES = {
 @router.post("/upload")
 async def upload_extrato(
     file: UploadFile = File(...),
+    doc_type: str = Form("extrato"),
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
@@ -24,7 +25,7 @@ async def upload_extrato(
     content = await file.read()
     month = datetime.now().strftime("%Y-%m")
 
-    transactions = parse_and_categorize(content, mime_type, month)
+    transactions = parse_and_categorize(content, mime_type, month, doc_type)
 
     saved = []
     for t in transactions:

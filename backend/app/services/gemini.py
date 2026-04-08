@@ -28,16 +28,16 @@ REGRAS OBRIGATÓRIAS:
 - Se a descrição for muito longa, resuma em até 40 caracteres
 Não inclua nenhum texto além do JSON."""
     elif doc_type == "pix_only":
-        prompt = """Analise este extrato bancário e extraia SOMENTE as transações Pix de SAÍDA (pagamentos feitos via Pix).
+        prompt = """Analise este extrato bancário e extraia SOMENTE as transações Pix (enviados e recebidos).
 Retorne APENAS um JSON válido no formato:
 [{"date": "YYYY-MM-DD", "description": "Pix - nome ou descrição", "amount": -45.00}]
 REGRAS OBRIGATÓRIAS:
-- Inclua APENAS transferências Pix enviadas/pagas (saídas)
-- NÃO inclua: Pix recebidos, TED, DOC, boletos, compras no débito, tarifas, saques, salário
-- Todos os valores devem ser NEGATIVOS
+- Inclua Pix ENVIADOS (saídas) com valores NEGATIVOS
+- Inclua Pix RECEBIDOS (entradas) com valores POSITIVOS
+- NÃO inclua: TED, DOC, boletos, compras no débito, tarifas, saques, salário, pagamento de fatura de cartão
 - Prefixe a descrição com "Pix - " se ainda não tiver
 - Se a descrição for muito longa, resuma em até 40 caracteres
-Se não houver nenhum Pix de saída, retorne [].
+Se não houver nenhum Pix, retorne [].
 Não inclua nenhum texto além do JSON."""
     else:
         prompt = """Analise este extrato bancário e extraia TODAS as transações individuais.
@@ -46,7 +46,7 @@ Retorne APENAS um JSON válido no formato:
 REGRAS OBRIGATÓRIAS:
 - Valores NEGATIVOS = saídas, débitos, compras, pagamentos
 - Valores POSITIVOS = entradas, créditos, transferências recebidas, salário, Pix recebido
-- NÃO inclua: saldo, totais, linhas de resumo ou cabeçalhos
+- NÃO inclua: saldo, totais, linhas de resumo, cabeçalhos ou pagamento de fatura de cartão de crédito
 - Inclua APENAS transações individuais
 - Se a descrição for muito longa, resuma em até 40 caracteres
 Não inclua nenhum texto além do JSON."""

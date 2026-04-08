@@ -2,14 +2,12 @@
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import UploadModal from "@/components/upload/UploadModal";
-import AddTransactionModal from "@/components/transactions/AddTransactionModal";
 import PixBatchModal from "@/components/transactions/PixBatchModal";
 import BudgetModal from "@/components/budget/BudgetModal";
 import RecurringModal from "@/components/recurring/RecurringModal";
 
 export default function Topbar({ onMenuClick }: { onMenuClick?: () => void }) {
   const [upload, setUpload] = useState(false);
-  const [add, setAdd] = useState(false);
   const [pix, setPix] = useState(false);
   const [budget, setBudget] = useState(false);
   const [recurring, setRecurring] = useState(false);
@@ -47,12 +45,7 @@ export default function Topbar({ onMenuClick }: { onMenuClick?: () => void }) {
           >
             Pix
           </button>
-          <button
-            onClick={() => setAdd(true)}
-            className="border border-border text-text-secondary text-xs font-semibold px-3 py-1.5 rounded-lg hover:text-text-primary hover:border-accent-green/40 transition"
-          >
-            + Transação
-          </button>
+
           <button
             onClick={() => setUpload(true)}
             className="bg-accent-green text-bg-base text-xs font-bold px-3 py-1.5 rounded-lg hover:brightness-110 transition"
@@ -62,7 +55,6 @@ export default function Topbar({ onMenuClick }: { onMenuClick?: () => void }) {
         </div>
       </header>
       {upload && <UploadModal onClose={() => setUpload(false)} />}
-      {add && <AddTransactionModal onClose={() => setAdd(false)} />}
       {pix && <PixBatchModal onClose={() => setPix(false)} />}
       {budget && <BudgetModal onClose={() => setBudget(false)} />}
       {recurring && <RecurringModal onClose={() => setRecurring(false)} />}

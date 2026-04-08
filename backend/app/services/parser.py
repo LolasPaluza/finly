@@ -15,8 +15,8 @@ def parse_and_categorize(file_content: bytes, mime_type: str, month: str, doc_ty
 
     for t in transactions:
         t["month"] = month
-        # Garante que fatura só tem despesas
-        if doc_type == "fatura":
+        # Garante que fatura e pix_only só têm despesas
+        if doc_type in ("fatura", "pix_only"):
             t["amount"] = -abs(float(t["amount"]))
 
     categorized_raw = categorize_transactions(transactions)

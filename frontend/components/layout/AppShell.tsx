@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 
+const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const PUBLIC = ["/auth/login", "/auth/register"];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -12,6 +13,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const isPublic = PUBLIC.includes(pathname);
   const [ready, setReady] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Acorda o backend assim que o site carrega
+  useEffect(() => {
+    fetch(`${BASE}/health`).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("finly_token");
